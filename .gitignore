@@ -6,7 +6,7 @@
 # C extensions
 *.so
 
-
+/mysite/profile
 # Distribution / packaging
 .Python
 build/

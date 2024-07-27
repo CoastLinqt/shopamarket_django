@@ -47,12 +47,14 @@ if DEBUG:
 # Application definition
 
 INSTALLED_APPS = [
+    'frontend',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     'debug_toolbar',
     'django.contrib.admindocs',
     'rest_framework',
@@ -60,6 +62,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'django.contrib.sitemaps',
     'shopapp.apps.ShopappConfig',
+    'myauth.apps.MyauthConfig',
 ]
 
 MIDDLEWARE = [
@@ -142,6 +145,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / 'profile'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
