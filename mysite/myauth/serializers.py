@@ -37,12 +37,10 @@ class SignInSerializer(serializers.ModelSerializer):
 
 
 class ProfileImagesSerializer(serializers.ModelSerializer):
-    alt = serializers.CharField(max_length=200)
-    src = serializers.ImageField
-
+    src = serializers.FileField
     class Meta:
         model = Profile
-        fields = ("alt", "src")
+        fields = ("alt", )
 
 
 class ProfileEditSerializer(serializers.ModelSerializer):
