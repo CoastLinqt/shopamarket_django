@@ -12,6 +12,7 @@ from .serializers import (
 )
 from .models import Profile
 from .utils import GetProfile
+from django.contrib.auth.models import User
 
 
 class SignUpView(APIView):
@@ -73,12 +74,6 @@ class SignInView(APIView):
 
 
 class ProfileEditView(APIView):
-    def get(self, request):
-        print(request.user.pk)
-        return Response(
-            GetProfile(object_name=Profile.objects.filter(user_id=request.user.pk)), status=status.HTTP_201_CREATED
-        )
-
     def post(self, request):
         serializer = ProfileEditSerializer(
             data=request.data, instance=request.user.profile
@@ -88,25 +83,53 @@ class ProfileEditView(APIView):
             serializer.save()
 
             return Response(
-                {"messages": "successfully, you entered"},
+                GetProfile(
+                    object_name=Profile.objects.filter(user_id=request.user.pk).defer(
+                        "src", "alt"
+                    )
+                ),
                 status=status.HTTP_201_CREATED,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def get(self, request):
+
+        return Response(
+            GetProfile(object_name=Profile.objects.filter(user_id=request.user.pk)),
+            status=status.HTTP_201_CREATED,
+        )
+
 
 class ProfileAvatar(APIView):
+
     def post(self, request):
+
         obj = Profile.objects.filter(user_id=request.user.pk)[0]
+
         obj.src = request.FILES["avatar"]
         obj.alt = request.FILES["avatar"]
         obj.save()
 
-        serializer = ProfileImagesSerializer(data=obj)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = ProfileImagesSerializer(
+            data={"src": request.FILES["avatar"], "alt": f"{obj.alt}"},
+            instance=request.user.profile,
+        )
+
+        if serializer.is_valid(raise_exception=False):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProfileEditPassword(APIView):
     def post(self, request):
-        return Response(
-            {"messages": "successfully, you entered"}, status=status.HTTP_200_OK
-        )
+        user = User.objects.filter(pk=request.user.pk)[0]
+
+        passwordCurrent = request.data['passwordCurrent']
+        password = request.data['password']
+        passwordReply = request.data['passwordReply']
+
+        if user.check_password(passwordCurrent) and (password == passwordReply):
+            user.set_password(passwordReply)
+            user.save()
+            return Response({"HE": f"{request.data}"}, status=status.HTTP_200_OK)

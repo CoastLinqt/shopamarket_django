@@ -26,7 +26,8 @@ var mix = {
                 this.avatar = data.avatar
                 this.phone = data.phone
                 this.email = data.email
-               alert('Успешно сохранено')
+               alert('Успешно сохранено, обновите страницу!')
+
             }).catch(() => {
                 console.warn('Ошибка при обновлении профиля')
             })
@@ -41,11 +42,17 @@ var mix = {
                 alert('В форме присутствуют незаполненные поля или пароли не совпадают')
                 return
             }
-            this.postData('/api/profile/password/').then(({data}) => {
+            this.postData('/api/profile/password/', {
+                passwordCurrent: this.passwordCurrent,
+                password: this.password,
+                passwordReply: this.passwordReply
+            }).then(({data}) => {
+
+                    this.passwordCurrent = data.passwordCurrent
+                    this.password = data.password
+                    this.passwordReply = data.passwordReply
+
                    alert('Успешно сохранено')
-                    this.passwordCurrent = ''
-                    this.password = ''
-                    this.passwordReply = ''
                 }).catch(() => {
                     console.warn('Ошибка при сохранении пароля')
                 })
