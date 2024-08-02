@@ -30,7 +30,7 @@ class Product(models.Model):
     freeDelivery = models.BooleanField(default=True)
     limited = models.BooleanField(default=False)
     rating = models.DecimalField(default=0, max_digits=3, decimal_places=2,
-                                 auto_created=True,blank=True)
+                                 auto_created=True, blank=True)
     active = models.BooleanField(default=False)
 
     category = models.ForeignKey(Categories, on_delete=models.SET_NULL,
