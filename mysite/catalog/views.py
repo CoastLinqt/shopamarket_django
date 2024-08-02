@@ -124,7 +124,6 @@ class CatalogPopularView(APIView):
 
         serialized = CatalogProductSerializers(products, many=True)
 
-
         return Response(serialized.data, status=status.HTTP_200_OK)
 
 
@@ -153,9 +152,8 @@ class BannersView(APIView):
     def get(self, request):
         prefetch = Prefetch('reviews', Review.objects.all())
         products = Product.objects.all().prefetch_related(prefetch).annotate(
-            product=Count('reviews__pk')).order_by('-product')[:2]
+            product=Count('reviews__pk')).order_by('-product')[:3]
 
         serialized = CatalogProductSerializers(products, many=True)
-
 
         return Response(serialized.data, status=status.HTTP_200_OK)

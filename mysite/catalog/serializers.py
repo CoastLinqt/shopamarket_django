@@ -73,9 +73,6 @@ class CatalogProductSerializers(serializers.ModelSerializer):
             return i.pk
 
 
-
-
-
 class SalesSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
