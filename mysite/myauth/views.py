@@ -9,6 +9,7 @@ from .serializers import (
     SignInSerializer,
     ProfileEditSerializer,
     ProfileImagesSerializer,
+    ProfilePasswordSerializer,
 )
 from .models import Profile
 from .utils import GetProfile
@@ -123,13 +124,29 @@ class ProfileAvatar(APIView):
 
 class ProfileEditPassword(APIView):
     def post(self, request):
+
         user = User.objects.filter(pk=request.user.pk)[0]
 
         passwordCurrent = request.data['passwordCurrent']
         password = request.data['password']
         passwordReply = request.data['passwordReply']
 
+        serializer = ProfilePasswordSerializer(data=request.data)
+
         if user.check_password(passwordCurrent) and (password == passwordReply):
-            user.set_password(passwordReply)
-            user.save()
-            return Response({"HE": f"{request.data}"}, status=status.HTTP_200_OK)
+            if serializer.is_valid():
+
+                user.set_password(password)
+                user.save()
+
+                user = authenticate(username=request.user.username, password=password)
+                login(request, user)
+
+                return Response(
+                    GetProfile(object_name=Profile.objects.filter(user_id=request.user.pk)),
+                    status=status.HTTP_201_CREATED,
+                )
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "the password does not match"}, status=status.HTTP_400_BAD_REQUEST)
+
