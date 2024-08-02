@@ -62,3 +62,11 @@ class ProfileEditSerializer(serializers.ModelSerializer):
         instance.alt = validated_data.get("alt", instance.alt)
         instance.save()
         return instance
+
+
+class ProfilePasswordSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(max_length=20,required=True)
+
+    class Meta:
+        model = User
+        fields = ("password",)

@@ -54,13 +54,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     'debug_toolbar',
     'django.contrib.admindocs',
     'rest_framework',
     'django_filters',
     'drf_spectacular',
     'django.contrib.sitemaps',
+    'basket.apps.BasketConfig',
+    'catalog.apps.CatalogConfig',
     'shopapp.apps.ShopappConfig',
     'myauth.apps.MyauthConfig',
 ]
@@ -129,6 +130,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -158,7 +160,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 10,
+    "PAGE_SIZE": 1,
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend"
     ],
@@ -171,3 +173,5 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
+
+CART_SESSION_ID = 'cart'
