@@ -124,7 +124,6 @@ class ProfileAvatar(APIView):
 
 class ProfileEditPassword(APIView):
     def post(self, request):
-
         user = User.objects.filter(pk=request.user.pk)[0]
 
         passwordCurrent = request.data['passwordCurrent']
