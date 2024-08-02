@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
                     models.ImageField(
                         blank=True,
                         null=True,
-                        upload_to=shopapp.models.product_preview_directory_path,
+                        upload_to=shopapp.models.product_image_directory_path,
                     ),
                 ),
             ],
