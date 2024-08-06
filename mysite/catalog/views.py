@@ -3,11 +3,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from .models import Categories
-from shopapp.models import Product, Sales, Review
+from shopapp.models import Product, Sales
 from rest_framework import pagination
 from rest_framework.viewsets import ModelViewSet
 from .serializers import CatalogProductSerializers, SalesSerializer, CategorySerializer
-from django.db.models import Avg, Count, Prefetch
+from django.db.models import Avg, Count
 
 
 class CategoriesView(APIView):
@@ -51,7 +51,6 @@ class CatalogView(APIView):
         sort = self.request.GET.get("sort", "")
         sortType = self.request.GET.get("sortType", "")
 
-        prefetch = Prefetch('reviews', Review.objects.all())
 
         try:
             category = int(self.request.META.get("HTTP_REFERER", "").split("/")[4])
@@ -81,21 +80,21 @@ class CatalogView(APIView):
 
         if sort == "rating":
             if sortType == "dec":
-                products = products.prefetch_related(prefetch).annotate(
+                products = products.prefetch_related('reviews').annotate(
                     rate=Avg('reviews__rate')).order_by('-rate')
 
             if sortType == "inc":
-                products = products.prefetch_related(prefetch).annotate(
+                products = products.prefetch_related('reviews').annotate(
                     rate=Avg('reviews__rate')).order_by('rate')
 
         if sort == "reviews":
 
             if sortType == "dec":
-                products = products.prefetch_related(prefetch).annotate(
+                products = products.prefetch_related('reviews').annotate(
                     product=Count('reviews__pk')).order_by('-product')
 
             if sortType == "inc":
-                products = products.prefetch_related(prefetch).annotate(
+                products = products.prefetch_related('reviews').annotate(
                     product=Count('reviews__pk')).order_by('product')
 
         return products
@@ -118,9 +117,8 @@ class CatalogView(APIView):
 class CatalogPopularView(APIView):
 
     def get(self, request):
-        prefetch = Prefetch('reviews', Review.objects.all())
-        products = Product.objects.all().prefetch_related(prefetch).annotate(
-            rate=Avg('reviews__rate')).order_by('-rate')
+        products = Product.objects.all().prefetch_related('reviews').annotate(
+            rate=Avg('reviews__rate')).order_by('-rate', 'title')[:5]
 
         serialized = CatalogProductSerializers(products, many=True)
 
@@ -150,9 +148,8 @@ class CatalogSalesView(APIView):
 
 class BannersView(APIView):
     def get(self, request):
-        prefetch = Prefetch('reviews', Review.objects.all())
-        products = Product.objects.all().prefetch_related(prefetch).annotate(
-            product=Count('reviews__pk')).order_by('-product')[:3]
+        products = Product.objects.all().prefetch_related('reviews').annotate(
+            product_count=Count('reviews__pk')).order_by('-product_count', 'title')[:2]
 
         serialized = CatalogProductSerializers(products, many=True)
 

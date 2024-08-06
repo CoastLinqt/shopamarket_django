@@ -9,7 +9,6 @@ from rest_framework import status
 class ProductDetailView(APIView):
     def get(self, request, pk):
 
-
         queryset = Product.objects.filter(pk=pk)
         serialized = ProductDetailsSerializers(queryset, many=True)
 

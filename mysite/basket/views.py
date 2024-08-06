@@ -1,34 +1,82 @@
-from django.shortcuts import render
 from rest_framework.response import Response
 from shopapp.models import Product
 from rest_framework.views import APIView
-from catalog.serializers import CatalogProductSerializers
 from rest_framework import status
-from django.http import HttpRequest, HttpResponse
 from .service import Cart
+from rest_framework.generics import get_object_or_404
+from django.db.models import Avg, Count
+from .serializers import BasketSerializers
+
+
+def get_product(session_cart):
+    product_id = [product for product in session_cart.cart.keys()]
+    queryset = (
+        Product.objects.filter(pk__in=product_id)
+        .prefetch_related("reviews")
+        .annotate(rate=Avg("reviews__rate"), product_count=Count("reviews__pk"))
+    )
+
+    serialized = BasketSerializers(queryset, many=True, context=session_cart.cart)
+    return serialized
+
 
 class BasketView(APIView):
 
     def get(self, request):
+
         cart = Cart(request)
 
+        serialized = get_product(session_cart=cart)
 
-        queryset = Product.objects.all()[:1]
-
-        serialized = CatalogProductSerializers(queryset, many=True)
-
-
-        return Response( {1:{ 'count': 2}}, status=status.HTTP_200_OK)
+        return Response(
+            serialized.data, status=status.HTTP_200_OK, content_type="application/json"
+        )
 
     def post(self, request, **kwargs):
-        print(request.data)
+
         cart = Cart(request)
         product = request.data
-        re = cart.add(product=product['id'], quantity=product['count'])
 
+        check_product = get_object_or_404(Product, pk=product["id"])
 
+        if check_product:
 
-        return Response({"id": 123, 'count': ''}, status=status.HTTP_200_OK)
+            cart.add(
+                product=check_product,
+                count=product["count"],
+            )
 
+            if "False" in [key for key in cart.cart.keys()]:
 
+                return Response(
+                    {
+                        "message",
+                        f"The number of selected items exceeds the total quantity of goods."
+                        f"You count in basket: {cart.cart.get(str(check_product.pk)).get('count')}, "
+                        f"Product: {check_product.title}, "
+                        f"Total: {check_product.count} in shop"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            else:
 
+                serialized = get_product(session_cart=cart)
+
+                return Response(serialized.data, status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request):
+
+        cart = Cart(request)
+        product = request.data
+
+        check_product = get_object_or_404(Product, pk=product["id"])
+
+        if check_product:
+            cart.remove(product=check_product, count=product["count"])
+
+            serialized = get_product(session_cart=cart)
+            return Response(serialized.data, status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_404_NOT_FOUND)

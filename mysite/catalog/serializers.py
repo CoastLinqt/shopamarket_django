@@ -3,6 +3,8 @@ from rest_framework import serializers
 from shopapp.models import Sales
 from shopapp.models import Product, ProductImage, Tag
 from django.db.models import Avg, Count
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 class SubSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
@@ -16,6 +18,7 @@ class SubSerializer(serializers.ModelSerializer):
             'src': obj.image.url,
             'alt': obj.image.name,
         }
+
 
 class CategorySerializer(serializers.ModelSerializer):
     subcategories = SubSerializer(many=True, required=False)
@@ -57,6 +60,9 @@ class CatalogProductSerializers(serializers.ModelSerializer):
     tags = TagsSerializers(many=True, required=False)
     rating = serializers.SerializerMethodField()
     reviews = serializers.SerializerMethodField()
+    price = serializers.DecimalField(default=0, max_digits=8, decimal_places=2,
+                                     validators=[MinValueValidator(1),
+                                                 MaxValueValidator(100000000)])
 
     class Meta:
         model = Product
@@ -65,12 +71,20 @@ class CatalogProductSerializers(serializers.ModelSerializer):
                   "title", "description", "freeDelivery", "images", "tags", 'reviews', "rating")
 
     def get_rating(self, obj):
-        for i in obj.reviews.all():
-            return i.rate
+        avg = obj.reviews.aggregate(Avg('rate'))
+
+        if avg['rate__avg'] is not None:
+            return round(avg['rate__avg'], 2)
+        return 0
 
     def get_reviews(self, obj):
-        for i in obj.reviews.all():
-            return i.pk
+
+        count = obj.reviews.aggregate(Count('pk'))
+        result = count['pk__count']
+
+        if result is not None:
+            return result
+        return 0
 
 
 class SalesSerializer(serializers.ModelSerializer):
