@@ -6,6 +6,7 @@ class Cart:
 
         self.session = request.session
         cart = self.session.get(settings.CART_SESSION_ID)
+        print(cart)
 
         if not cart:
             cart = self.session[settings.CART_SESSION_ID] = {}
@@ -39,6 +40,7 @@ class Cart:
                 self.cart[str(product_id)] = {
                     "count": count_product_basket + count,
                 }
+
         self.save()
 
     def save(self):
@@ -58,7 +60,7 @@ class Cart:
                     "count": count_product - count,
                 }
 
-            self.save()
+        self.save()
 
     def clear(self):
         del self.session[settings.CART_SESSION_ID]
