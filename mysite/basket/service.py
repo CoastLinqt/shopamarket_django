@@ -21,6 +21,7 @@ class Cart:
         product_count_limit = product.count
 
         if str(product_id) not in self.cart:
+
             if product_count_limit < count:
                 self.cart["False"] = False
             else:
@@ -28,6 +29,9 @@ class Cart:
                 self.cart[str(product_id)] = {
                     "count": count,
                 }
+
+                if self.cart[str(product_id)].get("count") == 0:
+                    del self.cart[str(product_id)]
 
         else:
 

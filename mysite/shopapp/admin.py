@@ -1,5 +1,17 @@
 from django.contrib import admin
-from .models import Tag,Product, ProductImage, ProductSpecification, Review
+from .models import Tag,Product, ProductImage, ProductSpecification, Review, Order
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+
+    list_display = ("pk", "createdAt", 'fullName', "email", "phone",
+                    "deliveryType", "paymentType", "totalCost", "status", "city", "address")
+
+
+
+    list_display_links = "pk", "fullName"
+    ordering = "pk", "fullName"
 
 
 @admin.register(Product)

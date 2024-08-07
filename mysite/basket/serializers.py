@@ -11,9 +11,7 @@ class BasketSerializers(serializers.ModelSerializer):
     tags = TagsSerializers(many=True, required=False)
     rating = serializers.SerializerMethodField()
     reviews = serializers.SerializerMethodField()
-    price = serializers.DecimalField(default=0, max_digits=8, decimal_places=2,
-                                     validators=[MinValueValidator(1),
-                                                 MaxValueValidator(100000000)])
+    price = serializers.SerializerMethodField()
     count = serializers.SerializerMethodField()
 
     class Meta:
@@ -44,5 +42,10 @@ class BasketSerializers(serializers.ModelSerializer):
         if result is not None:
             return result
         return 0
+
+    def get_price(self, obj):
+        print(self.context)
+        result = obj.price * self.context.get(f'{obj.pk}').get('count')
+        return result
 
 

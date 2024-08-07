@@ -1,11 +1,11 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from catalog.models import Categories
-
+from myauth.models import Profile
 
 def product_image_directory_path(instanse: 'ProductImage', filename: str) -> str:
-    return 'products/images/{pk}/{filename}'.format(
-        pk=instanse.product.pk,
+    return 'products/images/product_{pk}/{filename}'.format(
+        pk=instanse.pk,
         filename=filename
     )
 
@@ -85,7 +85,23 @@ class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.PROTECT,
                                 related_name='reviews',)
 
-
-
     def __str__(self) -> str:
         return f"{self.author}: {self.product.title}"
+
+
+class Order(models.Model):
+    createdAt = models.DateTimeField(auto_now_add=True)
+    fullName = models.CharField(max_length=200, null=False, blank=True)
+    email = models.EmailField(max_length=100, null=False)
+    phone = models.CharField(max_length=20, blank=True)
+    deliveryType = models.BooleanField(default=False)
+    paymentType = models.CharField(max_length=20, null=True, blank=True)
+    totalCost = models.DecimalField(default=0, max_digits=8, decimal_places=2,
+                                    validators=[MinValueValidator(1),
+                                                MaxValueValidator(100000000)])
+    status = models.CharField(max_length=20, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    address = models.CharField(max_length=100, null=True, blank=True)
+    product = models.ManyToManyField(Product, related_name="orders")
+    profile = models.ForeignKey(Profile, models.CASCADE, related_name="orders_profile",)
+

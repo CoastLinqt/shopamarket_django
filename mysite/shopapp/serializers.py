@@ -1,6 +1,6 @@
-from .models import Product, Tag, ProductImage, Sales, Review, ProductSpecification
+from .models import Product, Tag, ProductImage, Sales, Review, ProductSpecification, Order
 from catalog.serializers import ImageSerializers, TagsSerializers
-
+from basket.serializers import BasketSerializers
 from rest_framework import serializers
 
 
@@ -39,4 +39,15 @@ class ReviewDetailsSerializers(serializers.ModelSerializer):
         return Review.objects.create(**validated_data)
 
 
+
+class OrderSerializers(serializers.ModelSerializer):
+    product = BasketSerializers(many=True)
+    class Meta:
+        model = Order
+        fields = ('createdAt',
+                  'fullName',
+                  'email',
+                  'phone',
+                  'deliveryType',
+                  'paymentType', 'totalCost', 'status', 'city', 'address', 'product', 'profile')
 

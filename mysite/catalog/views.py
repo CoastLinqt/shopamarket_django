@@ -13,7 +13,9 @@ from django.db.models import Avg, Count
 class CategoriesView(APIView):
     def get(self, request: Request):
         categories = Categories.objects.filter(parent=None)
+        print(categories)
         serialized = CategorySerializer(categories, many=True)
+        print(serialized.data)
         return Response(serialized.data)
 
 
@@ -51,11 +53,12 @@ class CatalogView(APIView):
         sort = self.request.GET.get("sort", "")
         sortType = self.request.GET.get("sortType", "")
 
-
         try:
             category = int(self.request.META.get("HTTP_REFERER", "").split("/")[4])
+
             if category:
-                products = products.filter(category__pk=category)
+                products = products.filter(category__parent_id=category)
+
         except ValueError:
             products = products.filter(category__pk=1)
 
