@@ -1,4 +1,4 @@
-from .models import Product, Tag, ProductImage, Sales, Review, ProductSpecification, Order
+from .models import Product, Tag, ProductImage, Sales, Review, ProductSpecification, Order, Payment
 from catalog.serializers import ImageSerializers, TagsSerializers
 from basket.serializers import BasketSerializers
 from rest_framework import serializers
@@ -50,4 +50,26 @@ class OrderSerializers(serializers.ModelSerializer):
                   'phone',
                   'deliveryType',
                   'paymentType', 'totalCost', 'status', 'city', 'address', 'product', 'profile')
+
+
+class OrderFormSerializers(serializers.ModelSerializer):
+    deliveryType = serializers.CharField(default='free')
+    paymentType = serializers.CharField(default='online')
+
+    class Meta:
+        model = Order
+        fields = (
+                  'deliveryType',
+                  'paymentType', 'city', 'address', )
+
+
+
+class PaymentSerializers(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = Payment
+        fields = ('number', 'name', 'month', 'year', 'code', 'order_id',
+        )
+
 

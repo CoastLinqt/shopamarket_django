@@ -5,11 +5,14 @@ from rest_framework import status
 from .service import Cart
 from rest_framework.generics import get_object_or_404
 from django.db.models import Avg, Count
-from .serializers import BasketSerializers
+from .serializers import BasketSerializers, BasketFormSerializers
+from drf_yasg.utils import swagger_auto_schema
+
 
 
 def get_product(session_cart):
     product_id = [product for product in session_cart.cart.keys()]
+
     queryset = (
         Product.objects.filter(pk__in=product_id)
         .prefetch_related("reviews")
@@ -22,6 +25,7 @@ def get_product(session_cart):
 
 class BasketView(APIView):
 
+
     def get(self, request):
 
         cart = Cart(request)
@@ -32,18 +36,20 @@ class BasketView(APIView):
             serialized.data, status=status.HTTP_200_OK, content_type="application/json"
         )
 
+    @swagger_auto_schema(request_body=BasketFormSerializers)
     def post(self, request, **kwargs):
 
         cart = Cart(request)
         product = request.data
 
-        check_product = get_object_or_404(Product, pk=product["id"])
+        check_product = get_object_or_404(Product, pk=product.get("id"))
+        print(check_product)
 
         if check_product:
 
             cart.add(
                 product=check_product,
-                count=product["count"],
+                count=product.get("count"),
             )
 
             if "False" in [key for key in cart.cart.keys()]:
@@ -52,7 +58,6 @@ class BasketView(APIView):
                     {
                         "message",
                         f"The number of selected items exceeds the total quantity of goods."
-                        f"You count in basket: {cart.cart.get(str(check_product.pk)).get('count')}, "
                         f"Product: {check_product.title}, "
                         f"Total: {check_product.count} in shop"
                     },
@@ -66,15 +71,16 @@ class BasketView(APIView):
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+    @swagger_auto_schema(request_body=BasketFormSerializers)
     def delete(self, request):
 
         cart = Cart(request)
         product = request.data
 
-        check_product = get_object_or_404(Product, pk=product["id"])
+        check_product = get_object_or_404(Product, pk=product.get("id"))
 
         if check_product:
-            cart.remove(product=check_product, count=product["count"])
+            cart.remove(product=check_product, count=product.get("count"))
 
             serialized = get_product(session_cart=cart)
             return Response(serialized.data, status=status.HTTP_200_OK)

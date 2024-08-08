@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'drf_yasg',
     'debug_toolbar',
     'django.contrib.admindocs',
     'rest_framework',
@@ -175,4 +176,5 @@ SPECTACULAR_SETTINGS = {
 }
 
 CART_SESSION_ID = 'cart'
+
 

@@ -6,14 +6,13 @@ class Cart:
 
         self.session = request.session
         cart = self.session.get(settings.CART_SESSION_ID)
-        print(cart)
+
 
         if not cart:
             cart = self.session[settings.CART_SESSION_ID] = {}
         self.cart = cart
+        print(self.cart)
 
-        if "False" in [key for key in self.cart.keys()]:
-            del self.cart["False"]
 
     def add(self, product, count):
 
@@ -24,6 +23,7 @@ class Cart:
 
             if product_count_limit < count:
                 self.cart["False"] = False
+
             else:
 
                 self.cart[str(product_id)] = {
@@ -65,6 +65,11 @@ class Cart:
                 }
 
         self.save()
+
+    def __del__(self):
+        if "False" in [key for key in self.cart.keys()]:
+            del self.cart['False']
+
 
     def clear(self):
         del self.session[settings.CART_SESSION_ID]

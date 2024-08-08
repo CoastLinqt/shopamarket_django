@@ -23,7 +23,22 @@ from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
     SpectacularSwaggerView)
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
+
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Your API",
+        default_version='v1',
+        description="API documentation powered by Swagger",
+        terms_of_service="http://127.0.0.1:8000/",
+        contact=openapi.Contact(email="contact@your-api.com"),
+        license=openapi.License(name="Your API License"),
+    ),
+    public=True,
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -33,6 +48,7 @@ urlpatterns = [
     path('api/', include("basket.urls")),
     path("", include("frontend.urls")),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/api-docs/', schema_view.with_ui('swagger', cache_timeout=0), name='api-docs'),
     path('api/schema/swagger/', SpectacularSwaggerView.as_view(url_name='schema'),
          name='swagger'),
 

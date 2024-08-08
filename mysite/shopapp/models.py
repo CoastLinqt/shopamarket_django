@@ -94,14 +94,24 @@ class Order(models.Model):
     fullName = models.CharField(max_length=200, null=False, blank=True)
     email = models.EmailField(max_length=100, null=False)
     phone = models.CharField(max_length=20, blank=True)
-    deliveryType = models.BooleanField(default=False)
+    deliveryType = models.CharField(max_length=20, null=True, blank=True)
     paymentType = models.CharField(max_length=20, null=True, blank=True)
     totalCost = models.DecimalField(default=0, max_digits=8, decimal_places=2,
                                     validators=[MinValueValidator(1),
                                                 MaxValueValidator(100000000)])
-    status = models.CharField(max_length=20, null=True, blank=True)
+    status = models.CharField(max_length=20, null=True, blank=True, default='processing')
     city = models.CharField(max_length=100, null=True, blank=True)
     address = models.CharField(max_length=100, null=True, blank=True)
     product = models.ManyToManyField(Product, related_name="orders")
     profile = models.ForeignKey(Profile, models.CASCADE, related_name="orders_profile",)
+
+
+class Payment(models.Model):
+    number = models.CharField(max_length=8, null=False, blank=True)
+    name = models.CharField(max_length=100, null=False, blank=True)
+    month = models.CharField(max_length=2, null=False, blank=True)
+    year = models.CharField(max_length=4, null=False, blank=True)
+    code = models.CharField(max_length=3, null=False, blank=True)
+    order = models.OneToOneField(Order, models.CASCADE, related_name='payment')
+
 

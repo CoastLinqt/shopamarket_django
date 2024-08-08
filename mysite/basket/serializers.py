@@ -22,6 +22,8 @@ class BasketSerializers(serializers.ModelSerializer):
                   "freeDelivery", "images", "tags", "reviews", "rating")
 
     def get_count(self, obj):
+        if not self.context:
+            return obj.count
 
         count = self.context.get(f'{obj.pk}').get('count')
         return count
@@ -44,8 +46,17 @@ class BasketSerializers(serializers.ModelSerializer):
         return 0
 
     def get_price(self, obj):
-        print(self.context)
+        if not self.context:
+            return obj.price
         result = obj.price * self.context.get(f'{obj.pk}').get('count')
         return result
 
+
+class BasketFormSerializers(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+    count = serializers.IntegerField()
+
+    class Meta:
+        model = Product
+        fields = ("id", "count",)
 
