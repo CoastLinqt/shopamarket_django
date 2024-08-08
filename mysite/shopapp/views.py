@@ -13,10 +13,11 @@ from rest_framework import status
 from basket.serializers import BasketSerializers
 from basket.service import Cart
 from django.db.models import Avg, Count
-from django.shortcuts import render, redirect
 from drf_yasg.utils import swagger_auto_schema
-from django.db.models import F
 from bulk_update.helper import bulk_update
+from django.db import transaction
+
+
 class ProductDetailView(APIView):
     def get(self, request, pk):
 
@@ -60,7 +61,7 @@ class TagsView(APIView):
 
 
 class OrderPostView(APIView):
-
+    @transaction.atomic()
     def post(self, request):
 
         cart = Cart(request)
@@ -90,8 +91,9 @@ class OrderPostView(APIView):
             )
 
             order_create.product.add(*queryset)
-
             order_create.save()
+
+
 
             return Response({"order_id": {order_create.pk}}, status=status.HTTP_200_OK)
         return Response(
@@ -125,35 +127,39 @@ class OrderDetailsView(APIView):
         ):
 
             order = Order.objects.filter(pk=pk)
-            totalCost = order[0].totalCost
 
-            if [i.profile.pk for i in order][0] == request.user.profile.pk:
-                paymentType = request.data.get("paymentType")
-                deliveryType = request.data.get("deliveryType")
-                city = request.data.get("city")
-                address = request.data.get("address")
+            if order.exists():
+                totalCost = order[0].totalCost
 
-                cart = Cart(request)
+                if [i.profile.pk for i in order][0] == request.user.profile.pk:
+                    paymentType = request.data.get("paymentType")
+                    deliveryType = request.data.get("deliveryType")
+                    city = request.data.get("city")
+                    address = request.data.get("address")
 
-                if deliveryType == "express":
-                    totalCost += 500
+                    cart = Cart(request)
 
-                if deliveryType == "free" and totalCost < 2000:
-                    totalCost += 200
+                    if deliveryType == "express":
+                        totalCost += 500
 
-                order.update(
-                    paymentType=paymentType,
-                    deliveryType=deliveryType,
-                    city=city,
-                    address=address,
-                    totalCost=totalCost,
-                )
+                    if deliveryType == "free" and totalCost < 2000:
+                        totalCost += 200
 
-                serialized = OrderSerializers(order, many=True, context=cart.cart)
+                    order.update(
+                        paymentType=paymentType,
+                        deliveryType=deliveryType,
+                        city=city,
+                        address=address,
+                        totalCost=totalCost,
+                    )
 
-                return Response(serialized.data, status=status.HTTP_201_CREATED)
+                    serialized = OrderSerializers(order, many=True, context=cart.cart)
 
-            return Response("it's not your order", status=status.HTTP_404_NOT_FOUND)
+                    return Response(serialized.data, status=status.HTTP_201_CREATED)
+
+                return Response("it's not your order", status=status.HTTP_404_NOT_FOUND)
+
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
@@ -177,6 +183,7 @@ class OrderDetailsView(APIView):
 
 class PaymentView(APIView):
     @swagger_auto_schema(request_body=PaymentSerializers)
+    @transaction.atomic()
     def post(self, request, pk):
         if (
             request.user.is_authenticated
@@ -209,7 +216,14 @@ class PaymentView(APIView):
                 for products in order:
                     for product in products.product.all():
 
-                        product.count = product.count - cart.cart.get(f"{product.pk}").get("count")
+                        product.count = product.count - cart.cart.get(
+                            f"{product.pk}"
+                        ).get("count")
+
+                        if product.count < 0:
+                            return Response({'message': f"we don't have this count product {product.title}"},
+                                            status=status.HTTP_400_BAD_REQUEST)
+
                         result_update.append(product)
 
                 bulk_update(result_update)

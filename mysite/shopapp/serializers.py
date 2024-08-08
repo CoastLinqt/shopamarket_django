@@ -1,4 +1,4 @@
-from .models import Product, Tag, ProductImage, Sales, Review, ProductSpecification, Order, Payment
+from .models import Product, Review, ProductSpecification, Order, Payment
 from catalog.serializers import ImageSerializers, TagsSerializers
 from basket.serializers import BasketSerializers
 from rest_framework import serializers
@@ -39,9 +39,9 @@ class ReviewDetailsSerializers(serializers.ModelSerializer):
         return Review.objects.create(**validated_data)
 
 
-
 class OrderSerializers(serializers.ModelSerializer):
     product = BasketSerializers(many=True)
+
     class Meta:
         model = Order
         fields = ('createdAt',
@@ -63,13 +63,11 @@ class OrderFormSerializers(serializers.ModelSerializer):
                   'paymentType', 'city', 'address', )
 
 
-
 class PaymentSerializers(serializers.ModelSerializer):
-
 
     class Meta:
         model = Payment
         fields = ('number', 'name', 'month', 'year', 'code', 'order_id',
-        )
+                  )
 
 

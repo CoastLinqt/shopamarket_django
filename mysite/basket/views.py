@@ -43,7 +43,7 @@ class BasketView(APIView):
         product = request.data
 
         check_product = get_object_or_404(Product, pk=product.get("id"))
-        print(check_product)
+
 
         if check_product:
 

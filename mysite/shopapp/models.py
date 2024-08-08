@@ -2,6 +2,8 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from catalog.models import Categories
 from myauth.models import Profile
+from django.db.models import CheckConstraint
+
 
 def product_image_directory_path(instanse: 'ProductImage', filename: str) -> str:
     return 'products/images/product_{pk}/{filename}'.format(
@@ -25,7 +27,7 @@ class Product(models.Model):
     price = models.DecimalField(default=0, max_digits=8, decimal_places=2,
                                 validators=[MinValueValidator(1),
                                             MaxValueValidator(100000000)])
-    count = models.IntegerField(default=0, null=False)
+    count = models.IntegerField(default=0, null=False, validators=[MinValueValidator(1), MaxValueValidator(100000000)])
     date = models.DateTimeField(auto_now_add=True, null=False)
     freeDelivery = models.BooleanField(default=True)
     limited = models.BooleanField(default=False)
@@ -104,6 +106,8 @@ class Order(models.Model):
     address = models.CharField(max_length=100, null=True, blank=True)
     product = models.ManyToManyField(Product, related_name="orders")
     profile = models.ForeignKey(Profile, models.CASCADE, related_name="orders_profile",)
+
+
 
 
 class Payment(models.Model):
