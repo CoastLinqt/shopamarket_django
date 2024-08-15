@@ -10,23 +10,37 @@ from .serializers import (
     ProfileEditSerializer,
     ProfileImagesSerializer,
     ProfilePasswordSerializer,
+
 )
 from .models import Profile
 from .utils import GetProfile
 from django.contrib.auth.models import User
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.parsers import FormParser, MultiPartParser
+from .openapi import (avatar,
+                      password,
+                      passwordReply,
+                      passwordCurrent,
+                      profile_schema_response,
+                      profile_schema
+                      )
 
 
 class SignUpView(APIView):
+
+
+    @swagger_auto_schema(request_body=SignUpSerializer, responses={201:  "successfully, you entered",
+                                                                   404: 'ERRORS'})
     def post(self, request):
 
-        dict_string = list(request.data.keys())[0]
-        dict_new = json.loads(dict_string)
+        # dict_string = list(request.data.keys())[0]
+        # dict_new = json.loads(dict_string)
 
-        serializer = SignUpSerializer(data=dict_new)
+        serializer = SignUpSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            username = dict_new.get("username")
-            password = dict_new.get("password")
+            username = request.data.get("username")
+            password = request.data.get("password")
 
             user = authenticate(username=username, password=password)
 
@@ -40,14 +54,19 @@ class SignUpView(APIView):
 
 
 class SignOutView(APIView):
+    @swagger_auto_schema(responses={200: "successfully"})
     def post(self, request):
         logout(request)
-        return Response({"message": "successfully"})
+        return Response({"message": "successfully"}, status=status.HTTP_200_OK)
 
 
 class SignInView(APIView):
 
+    @swagger_auto_schema(request_body=SignInSerializer, responses={201: "successfully, you entered",
+                                                                   404: "user not found",
+                                                                   400: "ERRORS"})
     def post(self, request):
+
         dict_string = list(request.data.keys())[0]
 
         dict_new = json.loads(dict_string)
@@ -75,34 +94,44 @@ class SignInView(APIView):
 
 
 class ProfileEditView(APIView):
+    @swagger_auto_schema(request_body=ProfileEditSerializer, responses={201: '',
+                                                                        400: ''})
     def post(self, request):
-        serializer = ProfileEditSerializer(
-            data=request.data, instance=request.user.profile
-        )
-        if serializer.is_valid(raise_exception=True):
+        if request.user.is_authenticated:
+            serializer = ProfileEditSerializer(
+                data=request.data, instance=request.user.profile
+            )
+            if serializer.is_valid(raise_exception=True):
 
-            serializer.save()
+                serializer.save()
+
+                return Response(
+                    GetProfile(
+                        object_name=Profile.objects.filter(user_id=request.user.pk).defer(
+                            "src", "alt"
+                        )
+                    ),
+                    status=status.HTTP_201_CREATED,
+                )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return  Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    @swagger_auto_schema(responses=profile_schema)
+    def get(self, request):
+        if request.user.is_authenticated:
 
             return Response(
-                GetProfile(
-                    object_name=Profile.objects.filter(user_id=request.user.pk).defer(
-                        "src", "alt"
-                    )
-                ),
-                status=status.HTTP_201_CREATED,
+                GetProfile(object_name=Profile.objects.filter(user_id=request.user.pk)),
+                status=status.HTTP_200_OK,
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def get(self, request):
-
-        return Response(
-            GetProfile(object_name=Profile.objects.filter(user_id=request.user.pk)),
-            status=status.HTTP_201_CREATED,
-        )
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class ProfileAvatar(APIView):
+    parser_classes = [FormParser, MultiPartParser,]
 
+    @swagger_auto_schema(manual_parameters=[avatar,], responses={200: '',
+                                                                 400: ''})
     def post(self, request):
 
         obj = Profile.objects.filter(user_id=request.user.pk)[0]
@@ -123,6 +152,9 @@ class ProfileAvatar(APIView):
 
 
 class ProfileEditPassword(APIView):
+
+    @swagger_auto_schema(manual_parameters=[passwordCurrent, password, passwordReply],
+                         responses=profile_schema_response)
     def post(self, request):
         user = User.objects.filter(pk=request.user.pk)[0]
 
@@ -143,7 +175,7 @@ class ProfileEditPassword(APIView):
 
                 return Response(
                     GetProfile(object_name=Profile.objects.filter(user_id=request.user.pk)),
-                    status=status.HTTP_201_CREATED,
+                    status=status.HTTP_200_OK,
                 )
 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

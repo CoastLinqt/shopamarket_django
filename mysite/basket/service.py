@@ -11,12 +11,14 @@ class Cart:
             cart = self.session[settings.CART_SESSION_ID] = {}
         self.cart = cart
 
+
     def add(self, product, count):
 
         product_id = product.pk
         product_count_limit = product.count
 
         if str(product_id) not in self.cart:
+
 
             if product_count_limit < count:
                 self.cart["False"] = False

@@ -8,10 +8,12 @@ class SignUpSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=250, required=True)
 
     password = serializers.CharField(write_only=True, required=True)
+    phone = serializers.CharField(max_length=11, required=True)
+    email = serializers.EmailField(max_length=50, required=True)
 
     class Meta:
         model = User
-        fields = ("username", "password", "name", "email")
+        fields = ("username", "password", "name", "email", "phone")
 
     def create(self, validated_data):
 
@@ -20,7 +22,7 @@ class SignUpSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
         )
         Profile.objects.create(
-            user=user, fullName=validated_data["name"], email=validated_data["email"]
+            user=user, fullName=validated_data["name"], email=validated_data["email"], phone=validated_data['phone']
         )
 
         return user
@@ -38,15 +40,17 @@ class SignInSerializer(serializers.ModelSerializer):
 
 class ProfileImagesSerializer(serializers.ModelSerializer):
     src = serializers.FileField
+
     class Meta:
         model = Profile
         fields = ("alt", )
 
 
+
 class ProfileEditSerializer(serializers.ModelSerializer):
     fullName = serializers.CharField(max_length=250, required=True)
     phone = serializers.CharField(max_length=20, required=True)
-    email = serializers.CharField(max_length=250, required=True)
+    email = serializers.EmailField(max_length=250, required=True)
     src = serializers.ImageField
     alt = serializers.CharField
 

@@ -1,0 +1,63 @@
+[
+  {
+    "model": "shopapp.review",
+    "pk": 1,
+    "fields": {
+      "author": "jobs",
+      "email": "dl@inbox.ru",
+      "text": "norm",
+      "rate": 5,
+      "date": "2024-08-09T12:22:56.670Z",
+      "product": 1
+    }
+  },
+
+  {
+    "model": "shopapp.review",
+    "pk": 2,
+    "fields": {
+      "author": "adsa",
+      "email": "dvyl@inbox.ru",
+      "text": "dsadas",
+      "rate": 5,
+      "date": "2024-08-09T12:23:04.844Z",
+      "product": 2
+    }
+  },
+  {
+    "model": "shopapp.review",
+    "pk": 3,
+    "fields": {
+      "author": "dsa",
+      "email": "dl@inbox.ru",
+      "text": "dsad",
+      "rate": 5,
+      "date": "2024-08-09T12:23:12.725Z",
+      "product": 3
+    }
+  },
+  {
+    "model": "shopapp.review",
+    "pk": 4,
+    "fields": {
+      "author": "dsad",
+      "email": "dvyl@inbox.ru",
+      "text": "dsada",
+      "rate": 5,
+      "date": "2024-08-09T12:23:23.206Z",
+      "product": 4
+    }
+  },
+   {
+    "model": "shopapp.review",
+    "pk": 5,
+    "fields": {
+      "author": "jobs",
+      "email": "dl@inbox.ru",
+      "text": "norm",
+      "rate": 3,
+      "date": "2024-08-09T12:22:56.670Z",
+      "product": 1
+    }
+  }
+]

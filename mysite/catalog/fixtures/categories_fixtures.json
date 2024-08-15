@@ -1,0 +1,47 @@
+[
+  {
+    "model": "catalog.categories",
+    "pk": 1,
+    "fields": {
+      "title": "Phone",
+      "image": "categories/categories_None/root-page.png",
+      "parent": null
+    }
+  },
+  {
+    "model": "catalog.categories",
+    "pk": 2,
+    "fields": {
+      "title": "Computer",
+      "image": "categories/categories_None/bigGoods_pRd9XBK.png",
+      "parent": null
+    }
+  },
+  {
+    "model": "catalog.categories",
+    "pk": 3,
+    "fields": {
+      "title": "Apple",
+      "image": "categories/categories_None/root-page_Yr7Vo6M.png",
+      "parent": 1
+    }
+  },
+  {
+    "model": "catalog.categories",
+    "pk": 4,
+    "fields": {
+      "title": "samsung",
+      "image": "categories/categories_4/root-page.png",
+      "parent": 1
+    }
+  },
+  {
+    "model": "catalog.categories",
+    "pk": 5,
+    "fields": {
+      "title": "Lenovo",
+      "image": "categories/categories_None/gitlab-swagger.png",
+      "parent": 2
+    }
+  }
+]

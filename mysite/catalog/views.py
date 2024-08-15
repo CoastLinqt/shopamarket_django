@@ -8,15 +8,18 @@ from rest_framework import pagination
 from rest_framework.viewsets import ModelViewSet
 from .serializers import CatalogProductSerializers, SalesSerializer, CategorySerializer
 from django.db.models import Avg, Count
+from drf_yasg.utils import swagger_auto_schema
+from .openapi import name, minPrice, maxPrice, freeDelivery, available, sortType, sort, limit
 
 
+@swagger_auto_schema(responses={200: CategorySerializer })
 class CategoriesView(APIView):
     def get(self, request: Request):
         categories = Categories.objects.filter(parent=None)
 
         serialized = CategorySerializer(categories, many=True)
 
-        return Response(serialized.data)
+        return Response(serialized.data, status=status.HTTP_200_OK)
 
 
 class CustomPagination(pagination.PageNumberPagination):
@@ -52,6 +55,7 @@ class CatalogView(APIView):
         available = self.request.GET.get("filter[available]", "").capitalize()
         sort = self.request.GET.get("sort", "")
         sortType = self.request.GET.get("sortType", "")
+
 
         try:
             category = int(self.request.META.get("HTTP_REFERER", "").split("/")[4])
@@ -102,6 +106,7 @@ class CatalogView(APIView):
 
         return products
 
+
     def get(self, request):
 
         queryset = Product.objects.all()
@@ -118,18 +123,19 @@ class CatalogView(APIView):
 
 
 class CatalogPopularView(APIView):
-
+    @swagger_auto_schema(responses={200: CatalogProductSerializers})
     def get(self, request):
         products = Product.objects.all().prefetch_related('reviews').annotate(
             rate=Avg('reviews__rate')).order_by('-rate', 'title')[:5]
 
         serialized = CatalogProductSerializers(products, many=True)
 
+
         return Response(serialized.data, status=status.HTTP_200_OK)
 
 
 class CatalogLimitedView(APIView):
-
+    @swagger_auto_schema(responses={200: CatalogProductSerializers})
     def get(self, request):
         queryset = Product.objects.filter(limited=True)[:5]
         serialized = CatalogProductSerializers(queryset, many=True)
@@ -137,6 +143,7 @@ class CatalogLimitedView(APIView):
 
 
 class CatalogSalesView(APIView):
+    @swagger_auto_schema(responses={200: SalesSerializer})
     def get(self, request):
         sales = Sales.objects.all()
 
@@ -150,6 +157,7 @@ class CatalogSalesView(APIView):
 
 
 class BannersView(APIView):
+    @swagger_auto_schema(responses={200: CatalogProductSerializers})
     def get(self, request):
         products = Product.objects.all().prefetch_related('reviews').annotate(
             product_count=Count('reviews__pk')).order_by('-product_count', 'title')[:2]

@@ -1,0 +1,14 @@
+[
+  {
+    "model": "myauth.profile",
+    "pk": 1,
+    "fields": {
+      "user": 2,
+      "fullName": "Hi",
+      "email": "ddsa@inbox.ru",
+      "phone": "89356576543",
+      "src": "",
+      "alt": ""
+    }
+  }
+]

@@ -7,6 +7,8 @@ from .views import (ProductDetailView,
                     PaymentView,
                     )
 
+app_name = "shopapp"
+
 urlpatterns = [
     path("product/<int:pk>/", ProductDetailView.as_view(), name="product"),
     path("product/<int:pk>/reviews/", ProductDetailReviewView.as_view(), name="product_review"),

@@ -1,0 +1,78 @@
+[
+  {
+    "model": "shopapp.product",
+    "pk": 1,
+    "fields": {
+      "rating": "0.00",
+      "title": "Iphone",
+      "description": "Pro max",
+      "price": "1500.00",
+      "count": 48,
+      "date": "2024-08-09T12:18:55.051Z",
+      "freeDelivery": true,
+      "limited": true,
+      "active": true,
+      "category": 3,
+      "tags": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "shopapp.product",
+    "pk": 2,
+    "fields": {
+      "rating": "0.00",
+      "title": "Ipad",
+      "description": "a",
+      "price": "1000.00",
+      "count": 48,
+      "date": "2024-08-09T12:19:18.163Z",
+      "freeDelivery": true,
+      "limited": true,
+      "active": true,
+      "category": 3,
+      "tags": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "shopapp.product",
+    "pk": 3,
+    "fields": {
+      "rating": "0.00",
+      "title": "Galaxy",
+      "description": "S80",
+      "price": "500.00",
+      "count": 50,
+      "date": "2024-08-09T12:19:33.390Z",
+      "freeDelivery": true,
+      "limited": false,
+      "active": false,
+      "category": 4,
+      "tags": [
+        2
+      ]
+    }
+  },
+  {
+    "model": "shopapp.product",
+    "pk": 4,
+    "fields": {
+      "rating": "0.00",
+      "title": "Lenovo",
+      "description": "ewq",
+      "price": "1000.00",
+      "count": 50,
+      "date": "2024-08-09T12:20:06.980Z",
+      "freeDelivery": true,
+      "limited": true,
+      "active": false,
+      "category": 5,
+      "tags": [
+        2
+      ]
+    }
+  }
+]

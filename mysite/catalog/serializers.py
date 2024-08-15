@@ -5,7 +5,6 @@ from shopapp.models import Product, ProductImage, Tag
 from django.db.models import Avg, Count
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-
 class SubSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
 
@@ -108,3 +107,6 @@ class SalesSerializer(serializers.ModelSerializer):
 
         return [{"src": obj.images.image.url,
                 "alt": obj.images.image.name}]
+
+
+

@@ -3,7 +3,7 @@ from django.db import models
 
 def categories_preview_directory_path(instance: "Categories", filename: str) -> str:
 
-    return "categories/categories_{id}/{filename}".format(
+    return "catalog/categories_{id}/{filename}".format(
         id=instance.pk,
         filename=filename,
     )

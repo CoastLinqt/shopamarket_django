@@ -1,0 +1,38 @@
+[
+  {
+    "model": "shopapp.productimage",
+    "pk": 1,
+    "fields": {
+      "name": "iphone",
+      "product": 1,
+      "image": "products/images/product_None/gitlab-swagger.png"
+    }
+  },
+  {
+    "model": "shopapp.productimage",
+    "pk": 2,
+    "fields": {
+      "name": "ipad",
+      "product": 2,
+      "image": "products/images/product_None/root-page.png"
+    }
+  },
+  {
+    "model": "shopapp.productimage",
+    "pk": 3,
+    "fields": {
+      "name": "galaxy",
+      "product": 3,
+      "image": "products/images/product_None/inst.png"
+    }
+  },
+  {
+    "model": "shopapp.productimage",
+    "pk": 4,
+    "fields": {
+      "name": "lenovo",
+      "product": 4,
+      "image": "products/images/product_None/gitlab-swagger_1ZKVue9.png"
+    }
+  }
+]

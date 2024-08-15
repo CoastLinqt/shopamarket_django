@@ -1,0 +1,41 @@
+[
+  {
+    "model": "shopapp.order",
+    "pk": 1,
+    "fields": {
+      "createdAt": "2024-08-09T12:36:49.091Z",
+      "fullName": "Hi",
+      "email": "ddsa@inbox.ru",
+      "phone": "89356576543",
+      "deliveryType": "free",
+      "paymentType": "online",
+      "totalCost": "200.00",
+      "status": "processing",
+      "city": "string",
+      "address": "string",
+      "profile": 1,
+      "product": []
+    }
+  },
+  {
+    "model": "shopapp.order",
+    "pk": 2,
+    "fields": {
+      "createdAt": "2024-08-09T12:37:32.888Z",
+      "fullName": "Hi",
+      "email": "ddsa@inbox.ru",
+      "phone": "89356576543",
+      "deliveryType": "free",
+      "paymentType": "online",
+      "totalCost": "5000.00",
+      "status": "success",
+      "city": "string",
+      "address": "string",
+      "profile": 1,
+      "product": [
+        2,
+        1
+      ]
+    }
+  }
+]

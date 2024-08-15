@@ -1,5 +1,15 @@
 from django.contrib import admin
-from .models import Tag,Product, ProductImage, ProductSpecification, Review, Order
+from .models import Tag,Product, ProductImage, ProductSpecification, Review, Order, Payment
+
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ("pk", "number", "name", "month", "year", "code", "order")
+
+    list_display_links = "pk", "number"
+
+    ordering = "pk",
 
 
 @admin.register(Order)
@@ -7,7 +17,6 @@ class OrderAdmin(admin.ModelAdmin):
 
     list_display = ("pk", "createdAt", 'fullName', "email", "phone",
                     "deliveryType", "paymentType", "totalCost", "status", "city", "address")
-
 
 
     list_display_links = "pk", "fullName"

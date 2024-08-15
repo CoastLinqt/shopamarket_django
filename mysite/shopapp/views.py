@@ -13,12 +13,13 @@ from rest_framework import status
 from basket.serializers import BasketSerializers
 from basket.service import Cart
 from django.db.models import Avg, Count
-from drf_yasg.utils import swagger_auto_schema
 from bulk_update.helper import bulk_update
 from django.db import transaction
+from drf_yasg.utils import swagger_auto_schema
 
 
 class ProductDetailView(APIView):
+    @swagger_auto_schema(responses={200: ProductDetailsSerializers})
     def get(self, request, pk):
 
         queryset = (
@@ -34,6 +35,7 @@ class ProductDetailView(APIView):
 
 
 class ProductDetailReviewView(APIView):
+    @swagger_auto_schema(responses={200: ReviewDetailsSerializers})
     def post(self, request, pk):
         data_dict = {}
         author = request.data["author"]
@@ -61,8 +63,10 @@ class TagsView(APIView):
 
 
 class OrderPostView(APIView):
+    @swagger_auto_schema(responses={200: OrderSerializers, 401: "need to register"})
     @transaction.atomic()
     def post(self, request):
+
 
         cart = Cart(request)
         if (
@@ -92,17 +96,20 @@ class OrderPostView(APIView):
 
             order_create.product.add(*queryset)
             order_create.save()
+            print({"order_id": order_create.pk})
 
 
 
-            return Response({"order_id": {order_create.pk}}, status=status.HTTP_200_OK)
+            return Response({"order_id": order_create.pk}, status=status.HTTP_200_OK)
         return Response(
             {"messages: need to register"}, status=status.HTTP_401_UNAUTHORIZED
         )
 
+    @swagger_auto_schema(responses={200: OrderSerializers})
     def get(self, request):
+        print(request.user.profile.pk)
         order = (
-            Order.objects.all().select_related("profile").prefetch_related("product")
+            Order.objects.filter(profile_id=request.user.profile.pk).select_related("profile").prefetch_related("product")
         )
         serialized = OrderSerializers(order, many=True)
 
@@ -163,6 +170,9 @@ class OrderDetailsView(APIView):
 
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+    @swagger_auto_schema(responses={200: OrderSerializers,
+                                    404: "it's not your order",
+                                    401: 'UNAUTHORIZED'})
     def get(self, request, pk):
 
         if (
@@ -182,9 +192,12 @@ class OrderDetailsView(APIView):
 
 
 class PaymentView(APIView):
-    @swagger_auto_schema(request_body=PaymentSerializers)
+    @swagger_auto_schema(request_body=PaymentSerializers, responses={400: "we don't have this count product",
+                                                                     404: "it's not your order",
+                                                                     401: 'UNAUTHORIZED'})
     @transaction.atomic()
     def post(self, request, pk):
+
         if (
             request.user.is_authenticated
             and request.user.profile.user_id == request.user.pk

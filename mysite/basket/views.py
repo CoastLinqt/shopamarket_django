@@ -9,8 +9,8 @@ from .serializers import BasketSerializers, BasketFormSerializers
 from drf_yasg.utils import swagger_auto_schema
 
 
-
 def get_product(session_cart):
+
     product_id = [product for product in session_cart.cart.keys()]
 
     queryset = (
@@ -24,32 +24,41 @@ def get_product(session_cart):
 
 
 class BasketView(APIView):
-
-
+    @swagger_auto_schema(responses={200: BasketSerializers})
     def get(self, request):
 
+
+
         cart = Cart(request)
+
 
         serialized = get_product(session_cart=cart)
 
+
+
         return Response(
-            serialized.data, status=status.HTTP_200_OK, content_type="application/json"
+            serialized.data, status=status.HTTP_200_OK
         )
 
-    @swagger_auto_schema(request_body=BasketFormSerializers)
+    @swagger_auto_schema(request_body=BasketFormSerializers,
+                         responses={
+                                200: BasketSerializers,
+                                404: 'NOT FOUND'}
+                         )
     def post(self, request, **kwargs):
 
+
         cart = Cart(request)
+
         product = request.data
 
         check_product = get_object_or_404(Product, pk=product.get("id"))
-
 
         if check_product:
 
             cart.add(
                 product=check_product,
-                count=product.get("count"),
+                count=int(product.get("count")),
             )
 
             if "False" in [key for key in cart.cart.keys()]:
@@ -66,12 +75,16 @@ class BasketView(APIView):
             else:
 
                 serialized = get_product(session_cart=cart)
+                print(serialized.data)
+
 
                 return Response(serialized.data, status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @swagger_auto_schema(request_body=BasketFormSerializers)
+    @swagger_auto_schema(request_body=BasketFormSerializers, responses={
+                                200: BasketSerializers,
+                                404: 'NOT FOUND'})
     def delete(self, request):
 
         cart = Cart(request)

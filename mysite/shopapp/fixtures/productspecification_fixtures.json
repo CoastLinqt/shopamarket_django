@@ -1,0 +1,38 @@
+[
+  {
+    "model": "shopapp.productspecification",
+    "pk": 1,
+    "fields": {
+      "product": 1,
+      "name": "Iphone",
+      "value": "15 PRO"
+    }
+  },
+  {
+    "model": "shopapp.productspecification",
+    "pk": 2,
+    "fields": {
+      "product": 2,
+      "name": "Ipaf",
+      "value": "15 PRO"
+    }
+  },
+  {
+    "model": "shopapp.productspecification",
+    "pk": 3,
+    "fields": {
+      "product": 3,
+      "name": "galaxy",
+      "value": "15 PRO"
+    }
+  },
+  {
+    "model": "shopapp.productspecification",
+    "pk": 4,
+    "fields": {
+      "product": 4,
+      "name": "lenovo",
+      "value": "15 PRO"
+    }
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "model": "shopapp.payment",
+    "pk": 1,
+    "fields": {
+      "number": "string",
+      "name": "string",
+      "month": "st",
+      "year": "stri",
+      "code": "str",
+      "order": 2
+    }
+  }
+]

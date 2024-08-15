@@ -1,0 +1,16 @@
+[
+  {
+    "model": "shopapp.tag",
+    "pk": 1,
+    "fields": {
+      "name": "apple"
+    }
+  },
+  {
+    "model": "shopapp.tag",
+    "pk": 2,
+    "fields": {
+      "name": "samsung"
+    }
+  }
+]
