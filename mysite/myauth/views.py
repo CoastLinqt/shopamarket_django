@@ -18,33 +18,38 @@ from django.contrib.auth.models import User
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import FormParser, MultiPartParser
 from .openapi import (avatar,
-                      password,
-                      passwordReply,
-                      passwordCurrent,
+                      password_input,
                       profile_schema_response,
                       profile_schema
                       )
+from django.http import QueryDict
+from django.db import transaction
 
 
 class SignUpView(APIView):
 
-
     @swagger_auto_schema(request_body=SignUpSerializer, responses={201:  "successfully, you entered",
                                                                    404: 'ERRORS'})
+    @transaction.atomic()
     def post(self, request):
+        request = request.data
 
-        # dict_string = list(request.data.keys())[0]
-        # dict_new = json.loads(dict_string)
+        if isinstance(request, QueryDict):
+            dict_string = list(request.keys())[0]
 
-        serializer = SignUpSerializer(data=request.data)
+            dict_new = json.loads(dict_string)
+
+            request = dict_new
+
+        serializer = SignUpSerializer(data=request)
         if serializer.is_valid():
             serializer.save()
-            username = request.data.get("username")
-            password = request.data.get("password")
+            username = request.get("username")
+            password = request.get("password")
 
             user = authenticate(username=username, password=password)
 
-            login(request, user)
+            login(self.request, user)
             return Response(
                 {"messages": "successfully, you entered"},
                 status=status.HTTP_201_CREATED,
@@ -67,19 +72,25 @@ class SignInView(APIView):
                                                                    400: "ERRORS"})
     def post(self, request):
 
-        dict_string = list(request.data.keys())[0]
+        request = request.data
 
-        dict_new = json.loads(dict_string)
+        if isinstance(request, QueryDict):
 
-        serializer = SignInSerializer(data=dict_new)
+            dict_string = list(request.keys())[0]
+
+            dict_new = json.loads(dict_string)
+
+            request = dict_new
+
+        serializer = SignInSerializer(data=request)
         if serializer.is_valid():
 
-            username = dict_new.get("username")
-            password = dict_new.get("password")
+            username = request.get("username")
+            password = request.get("password")
 
             user = authenticate(username=username, password=password)
             if user is not None:
-                login(request, user)
+                login(self.request, user)
 
                 return Response(
                     {"messages": "successfully, you entered"},
@@ -153,7 +164,7 @@ class ProfileAvatar(APIView):
 
 class ProfileEditPassword(APIView):
 
-    @swagger_auto_schema(manual_parameters=[passwordCurrent, password, passwordReply],
+    @swagger_auto_schema(request_body=password_input,
                          responses=profile_schema_response)
     def post(self, request):
         user = User.objects.filter(pk=request.user.pk)[0]

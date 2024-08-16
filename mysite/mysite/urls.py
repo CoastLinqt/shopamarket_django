@@ -28,10 +28,10 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Your API",
+        title="My API",
         default_version='v1',
         description="API documentation powered by Swagger",
-        terms_of_service="http://127.0.0.1:8000/",
+        terms_of_service="",
         contact=openapi.Contact(email="contact@your-api.com"),
         license=openapi.License(name="Your API License"),
     ),
