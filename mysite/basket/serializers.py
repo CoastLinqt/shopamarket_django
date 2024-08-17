@@ -16,30 +16,38 @@ class BasketSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ("pk", "category",
-                  "price", "count",
-                  "date", "title", "description",
-                  "freeDelivery", "images", "tags", "reviews", "rating")
+        fields = (
+            "pk",
+            "category",
+            "price",
+            "count",
+            "date",
+            "title",
+            "description",
+            "freeDelivery",
+            "images",
+            "tags",
+            "reviews",
+            "rating",
+        )
 
     def get_count(self, obj):
         if not self.context:
             return obj.count
 
-        count = self.context.get(f'{obj.pk}').get('count')
+        count = self.context.get(f"{obj.pk}").get("count")
         return count
 
-
     def get_rating(self, obj):
-        avg = obj.reviews.aggregate(Avg('rate'))
+        avg = obj.reviews.aggregate(Avg("rate"))
 
-        if avg['rate__avg'] is not None:
-            return round(avg['rate__avg'], 2)
+        if avg["rate__avg"] is not None:
+            return round(avg["rate__avg"], 2)
         return 0
 
     def get_reviews(self, obj):
-
-        count = obj.reviews.aggregate(Count('pk'))
-        result = count['pk__count']
+        count = obj.reviews.aggregate(Count("pk"))
+        result = count["pk__count"]
 
         if result is not None:
             return result
@@ -48,7 +56,7 @@ class BasketSerializers(serializers.ModelSerializer):
     def get_price(self, obj):
         if not self.context:
             return obj.price
-        result = obj.price * self.context.get(f'{obj.pk}').get('count')
+        result = obj.price * self.context.get(f"{obj.pk}").get("count")
         return result
 
 
@@ -58,5 +66,7 @@ class BasketFormSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ("id", "count",)
-
+        fields = (
+            "id",
+            "count",
+        )

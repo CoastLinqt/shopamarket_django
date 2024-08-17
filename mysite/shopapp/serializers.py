@@ -7,13 +7,22 @@ from rest_framework import serializers
 class ProductSpecificationSerializers(serializers.ModelSerializer):
     class Meta:
         model = ProductSpecification
-        fields = ("name", "value", )
+        fields = (
+            "name",
+            "value",
+        )
 
 
 class ReviewSerializers(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = ("author", "email", "text", "rate", "date",)
+        fields = (
+            "author",
+            "email",
+            "text",
+            "rate",
+            "date",
+        )
 
 
 class ProductDetailsSerializers(serializers.ModelSerializer):
@@ -24,10 +33,22 @@ class ProductDetailsSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ("id",
-                  "category", "price", "count", "date",
-                  "title", "description", "freeDelivery", "images", "tags", 'reviews', "rating", "specifications",
-                  "reviews")
+        fields = (
+            "id",
+            "category",
+            "price",
+            "count",
+            "date",
+            "title",
+            "description",
+            "freeDelivery",
+            "images",
+            "tags",
+            "reviews",
+            "rating",
+            "specifications",
+            "reviews",
+        )
 
 
 class ReviewDetailsSerializers(serializers.ModelSerializer):
@@ -44,30 +65,44 @@ class OrderSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('createdAt',
-                  'fullName',
-                  'email',
-                  'phone',
-                  'deliveryType',
-                  'paymentType', 'totalCost', 'status', 'city', 'address', 'product', 'profile')
+        fields = (
+            "createdAt",
+            "fullName",
+            "email",
+            "phone",
+            "deliveryType",
+            "paymentType",
+            "totalCost",
+            "status",
+            "city",
+            "address",
+            "product",
+            "profile",
+        )
 
 
 class OrderFormSerializers(serializers.ModelSerializer):
-    deliveryType = serializers.CharField(default='free')
-    paymentType = serializers.CharField(default='online')
+    deliveryType = serializers.CharField(default="free")
+    paymentType = serializers.CharField(default="online")
 
     class Meta:
         model = Order
         fields = (
-                  'deliveryType',
-                  'paymentType', 'city', 'address', )
+            "deliveryType",
+            "paymentType",
+            "city",
+            "address",
+        )
 
 
 class PaymentSerializers(serializers.ModelSerializer):
-
     class Meta:
         model = Payment
-        fields = ('number', 'name', 'month', 'year', 'code', 'order_id',
-                  )
-
-
+        fields = (
+            "number",
+            "name",
+            "month",
+            "year",
+            "code",
+            "order_id",
+        )

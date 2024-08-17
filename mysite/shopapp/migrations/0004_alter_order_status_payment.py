@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("shopapp", "0003_alter_order_deliverytype"),
     ]

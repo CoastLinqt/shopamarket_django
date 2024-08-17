@@ -9,10 +9,19 @@ from rest_framework.viewsets import ModelViewSet
 from .serializers import CatalogProductSerializers, SalesSerializer, CategorySerializer
 from django.db.models import Avg, Count
 from drf_yasg.utils import swagger_auto_schema
-from .openapi import name, minPrice, maxPrice, freeDelivery, available, sortType, sort, limit
+from .openapi import (
+    name,
+    minPrice,
+    maxPrice,
+    freeDelivery,
+    available,
+    sortType,
+    sort,
+    limit,
+)
 
 
-@swagger_auto_schema(responses={200: CategorySerializer })
+@swagger_auto_schema(responses={200: CategorySerializer})
 class CategoriesView(APIView):
     def get(self, request: Request):
         categories = Categories.objects.filter(parent=None)
@@ -27,7 +36,6 @@ class CustomPagination(pagination.PageNumberPagination):
     max_page_size = 100
 
     def get_paginated_response(self, data):
-
         return Response(
             {
                 "items": data,
@@ -45,9 +53,7 @@ class CategoriesViewSET(ModelViewSet):
 
 
 class CatalogView(APIView):
-
     def filter_queryset(self, products):
-
         name = self.request.GET.get("filter[name]", "").strip()
         minPrice = float(self.request.GET.get("filter[minPrice]", ""))
         maxPrice = float(self.request.GET.get("filter[maxPrice]", ""))
@@ -55,7 +61,6 @@ class CatalogView(APIView):
         available = self.request.GET.get("filter[available]", "").capitalize()
         sort = self.request.GET.get("sort", "")
         sortType = self.request.GET.get("sortType", "")
-
 
         try:
             category = int(self.request.META.get("HTTP_REFERER", "").split("/")[4])
@@ -79,7 +84,6 @@ class CatalogView(APIView):
 
         if sort == "price" or sort == "date":
             if sortType == "dec":
-
                 products = products.order_by(f"-{sort}")
 
             if sortType == "inc":
@@ -87,28 +91,37 @@ class CatalogView(APIView):
 
         if sort == "rating":
             if sortType == "dec":
-                products = products.prefetch_related('reviews').annotate(
-                    rate=Avg('reviews__rate')).order_by('-rate')
+                products = (
+                    products.prefetch_related("reviews")
+                    .annotate(rate=Avg("reviews__rate"))
+                    .order_by("-rate")
+                )
 
             if sortType == "inc":
-                products = products.prefetch_related('reviews').annotate(
-                    rate=Avg('reviews__rate')).order_by('rate')
+                products = (
+                    products.prefetch_related("reviews")
+                    .annotate(rate=Avg("reviews__rate"))
+                    .order_by("rate")
+                )
 
         if sort == "reviews":
-
             if sortType == "dec":
-                products = products.prefetch_related('reviews').annotate(
-                    product=Count('reviews__pk')).order_by('-product')
+                products = (
+                    products.prefetch_related("reviews")
+                    .annotate(product=Count("reviews__pk"))
+                    .order_by("-product")
+                )
 
             if sortType == "inc":
-                products = products.prefetch_related('reviews').annotate(
-                    product=Count('reviews__pk')).order_by('product')
+                products = (
+                    products.prefetch_related("reviews")
+                    .annotate(product=Count("reviews__pk"))
+                    .order_by("product")
+                )
 
         return products
 
-
     def get(self, request):
-
         queryset = Product.objects.all()
 
         paginator = CustomPagination()
@@ -125,11 +138,14 @@ class CatalogView(APIView):
 class CatalogPopularView(APIView):
     @swagger_auto_schema(responses={200: CatalogProductSerializers})
     def get(self, request):
-        products = Product.objects.all().prefetch_related('reviews').annotate(
-            rate=Avg('reviews__rate')).order_by('-rate', 'title')[:5]
+        products = (
+            Product.objects.all()
+            .prefetch_related("reviews")
+            .annotate(rate=Avg("reviews__rate"))
+            .order_by("-rate", "title")[:5]
+        )
 
         serialized = CatalogProductSerializers(products, many=True)
-
 
         return Response(serialized.data, status=status.HTTP_200_OK)
 
@@ -159,8 +175,12 @@ class CatalogSalesView(APIView):
 class BannersView(APIView):
     @swagger_auto_schema(responses={200: CatalogProductSerializers})
     def get(self, request):
-        products = Product.objects.all().prefetch_related('reviews').annotate(
-            product_count=Count('reviews__pk')).order_by('-product_count', 'title')[:2]
+        products = (
+            Product.objects.all()
+            .prefetch_related("reviews")
+            .annotate(product_count=Count("reviews__pk"))
+            .order_by("-product_count", "title")[:2]
+        )
 
         serialized = CatalogProductSerializers(products, many=True)
 

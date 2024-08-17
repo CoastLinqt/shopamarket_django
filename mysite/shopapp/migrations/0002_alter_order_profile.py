@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("myauth", "0006_remove_profile_avatar_profile_alt_profile_src_and_more"),
         ("shopapp", "0001_initial"),

@@ -22,14 +22,15 @@ from django.conf.urls.static import static
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
-    SpectacularSwaggerView)
+    SpectacularSwaggerView,
+)
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
         title="My API",
-        default_version='v1',
+        default_version="v1",
         description="API documentation powered by Swagger",
         terms_of_service="",
         contact=openapi.Contact(email="contact@your-api.com"),
@@ -43,24 +44,24 @@ urlpatterns = [
     path("api/", include("catalog.urls")),
     path("api/", include("myauth.urls")),
     path("api/", include("shopapp.urls")),
-    path('api/', include("basket.urls")),
+    path("api/", include("basket.urls")),
     path("", include("frontend.urls")),
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/api-docs/', schema_view.with_ui('swagger', cache_timeout=0), name='api-docs'),
-    path('api/schema/swagger/', SpectacularSwaggerView.as_view(url_name='schema'),
-         name='swagger'),
-
-
-
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/api-docs/",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="api-docs",
+    ),
+    path(
+        "api/schema/swagger/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger",
+    ),
 ]
 
 if settings.DEBUG:
-    urlpatterns.extend(
-        static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    )
-    urlpatterns.extend(
-        static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    )
+    urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
+    urlpatterns.extend(static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))
     urlpatterns.append(
         path("__debug__/", include("debug_toolbar.urls")),
     )

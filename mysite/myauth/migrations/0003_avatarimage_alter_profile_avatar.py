@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("myauth", "0002_rename_full_name_profile_fullname_and_more"),
     ]

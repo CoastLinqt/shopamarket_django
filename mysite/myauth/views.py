@@ -10,26 +10,22 @@ from .serializers import (
     ProfileEditSerializer,
     ProfileImagesSerializer,
     ProfilePasswordSerializer,
-
 )
 from .models import Profile
 from .utils import GetProfile
 from django.contrib.auth.models import User
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import FormParser, MultiPartParser
-from .openapi import (avatar,
-                      password_input,
-                      profile_schema_response,
-                      profile_schema
-                      )
+from .openapi import avatar, password_input, profile_schema_response, profile_schema
 from django.http import QueryDict
 from django.db import transaction
 
 
 class SignUpView(APIView):
-
-    @swagger_auto_schema(request_body=SignUpSerializer, responses={201:  "successfully, you entered",
-                                                                   404: 'ERRORS'})
+    @swagger_auto_schema(
+        request_body=SignUpSerializer,
+        responses={201: "successfully, you entered", 404: "ERRORS"},
+    )
     @transaction.atomic()
     def post(self, request):
         request = request.data
@@ -66,16 +62,18 @@ class SignOutView(APIView):
 
 
 class SignInView(APIView):
-
-    @swagger_auto_schema(request_body=SignInSerializer, responses={201: "successfully, you entered",
-                                                                   404: "user not found",
-                                                                   400: "ERRORS"})
+    @swagger_auto_schema(
+        request_body=SignInSerializer,
+        responses={
+            201: "successfully, you entered",
+            404: "user not found",
+            400: "ERRORS",
+        },
+    )
     def post(self, request):
-
         request = request.data
 
         if isinstance(request, QueryDict):
-
             dict_string = list(request.keys())[0]
 
             dict_new = json.loads(dict_string)
@@ -84,7 +82,6 @@ class SignInView(APIView):
 
         serializer = SignInSerializer(data=request)
         if serializer.is_valid():
-
             username = request.get("username")
             password = request.get("password")
 
@@ -105,32 +102,31 @@ class SignInView(APIView):
 
 
 class ProfileEditView(APIView):
-    @swagger_auto_schema(request_body=ProfileEditSerializer, responses={201: '',
-                                                                        400: ''})
+    @swagger_auto_schema(
+        request_body=ProfileEditSerializer, responses={201: "", 400: ""}
+    )
     def post(self, request):
         if request.user.is_authenticated:
             serializer = ProfileEditSerializer(
                 data=request.data, instance=request.user.profile
             )
             if serializer.is_valid(raise_exception=True):
-
                 serializer.save()
 
                 return Response(
                     GetProfile(
-                        object_name=Profile.objects.filter(user_id=request.user.pk).defer(
-                            "src", "alt"
-                        )
+                        object_name=Profile.objects.filter(
+                            user_id=request.user.pk
+                        ).defer("src", "alt")
                     ),
                     status=status.HTTP_201_CREATED,
                 )
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return  Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     @swagger_auto_schema(responses=profile_schema)
     def get(self, request):
         if request.user.is_authenticated:
-
             return Response(
                 GetProfile(object_name=Profile.objects.filter(user_id=request.user.pk)),
                 status=status.HTTP_200_OK,
@@ -139,12 +135,18 @@ class ProfileEditView(APIView):
 
 
 class ProfileAvatar(APIView):
-    parser_classes = [FormParser, MultiPartParser,]
+    parser_classes = [
+        FormParser,
+        MultiPartParser,
+    ]
 
-    @swagger_auto_schema(manual_parameters=[avatar,], responses={200: '',
-                                                                 400: ''})
+    @swagger_auto_schema(
+        manual_parameters=[
+            avatar,
+        ],
+        responses={200: "", 400: ""},
+    )
     def post(self, request):
-
         obj = Profile.objects.filter(user_id=request.user.pk)[0]
 
         obj.src = request.FILES["avatar"]
@@ -163,21 +165,18 @@ class ProfileAvatar(APIView):
 
 
 class ProfileEditPassword(APIView):
-
-    @swagger_auto_schema(request_body=password_input,
-                         responses=profile_schema_response)
+    @swagger_auto_schema(request_body=password_input, responses=profile_schema_response)
     def post(self, request):
         user = User.objects.filter(pk=request.user.pk)[0]
 
-        passwordCurrent = request.data['passwordCurrent']
-        password = request.data['password']
-        passwordReply = request.data['passwordReply']
+        passwordCurrent = request.data["passwordCurrent"]
+        password = request.data["password"]
+        passwordReply = request.data["passwordReply"]
 
         serializer = ProfilePasswordSerializer(data=request.data)
 
         if user.check_password(passwordCurrent) and (password == passwordReply):
             if serializer.is_valid():
-
                 user.set_password(password)
                 user.save()
 
@@ -185,10 +184,14 @@ class ProfileEditPassword(APIView):
                 login(request, user)
 
                 return Response(
-                    GetProfile(object_name=Profile.objects.filter(user_id=request.user.pk)),
+                    GetProfile(
+                        object_name=Profile.objects.filter(user_id=request.user.pk)
+                    ),
                     status=status.HTTP_200_OK,
                 )
 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"message": "the password does not match"}, status=status.HTTP_400_BAD_REQUEST)
-
+        return Response(
+            {"message": "the password does not match"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )

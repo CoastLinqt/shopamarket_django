@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("myauth", "0005_rename_img_avatarimage_alt"),
     ]

@@ -16,13 +16,15 @@ class SignUpSerializer(serializers.ModelSerializer):
         fields = ("username", "password", "name", "email", "phone")
 
     def create(self, validated_data):
-
         user = User.objects.create_user(
             username=validated_data["username"],
             password=validated_data["password"],
         )
         Profile.objects.create(
-            user=user, fullName=validated_data["name"], email=validated_data["email"], phone=validated_data['phone']
+            user=user,
+            fullName=validated_data["name"],
+            email=validated_data["email"],
+            phone=validated_data["phone"],
         )
 
         return user
@@ -43,8 +45,7 @@ class ProfileImagesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ("alt", )
-
+        fields = ("alt",)
 
 
 class ProfileEditSerializer(serializers.ModelSerializer):
@@ -69,7 +70,7 @@ class ProfileEditSerializer(serializers.ModelSerializer):
 
 
 class ProfilePasswordSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(max_length=20,required=True)
+    password = serializers.CharField(max_length=20, required=True)
 
     class Meta:
         model = User

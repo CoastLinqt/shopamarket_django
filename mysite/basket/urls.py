@@ -6,4 +6,4 @@ app_name = "basket"
 
 urlpatterns = [
     path("basket/", BasketView.as_view(), name="basket"),
-   ]
+]

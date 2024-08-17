@@ -21,7 +21,6 @@ from drf_yasg.utils import swagger_auto_schema
 class ProductDetailView(APIView):
     @swagger_auto_schema(responses={200: ProductDetailsSerializers})
     def get(self, request, pk):
-
         queryset = (
             Product.objects.filter(pk=pk)
             .select_related("category")
@@ -66,14 +65,11 @@ class OrderPostView(APIView):
     @swagger_auto_schema(responses={200: OrderSerializers, 401: "need to register"})
     @transaction.atomic()
     def post(self, request):
-
-
         cart = Cart(request)
         if (
             request.user.is_authenticated
             and request.user.profile.user_id == request.user.pk
         ):
-
             product_id = [product for product in cart.cart.keys()]
 
             queryset = (
@@ -98,8 +94,6 @@ class OrderPostView(APIView):
             order_create.save()
             print({"order_id": order_create.pk})
 
-
-
             return Response({"order_id": order_create.pk}, status=status.HTTP_200_OK)
         return Response(
             {"messages: need to register"}, status=status.HTTP_401_UNAUTHORIZED
@@ -109,7 +103,9 @@ class OrderPostView(APIView):
     def get(self, request):
         print(request.user.profile.pk)
         order = (
-            Order.objects.filter(profile_id=request.user.profile.pk).select_related("profile").prefetch_related("product")
+            Order.objects.filter(profile_id=request.user.profile.pk)
+            .select_related("profile")
+            .prefetch_related("product")
         )
         serialized = OrderSerializers(order, many=True)
 
@@ -117,7 +113,6 @@ class OrderPostView(APIView):
 
 
 class OrderDetailsView(APIView):
-
     @swagger_auto_schema(
         operation_description="paymentType - Тип оплаты, может быть online или someone, "
         "deliveryType - Доставка free или express, "
@@ -127,12 +122,10 @@ class OrderDetailsView(APIView):
         responses={201: OrderSerializers},
     )
     def post(self, request, pk):
-
         if (
             request.user.is_authenticated
             and request.user.profile.user_id == request.user.pk
         ):
-
             order = Order.objects.filter(pk=pk)
 
             if order.exists():
@@ -170,11 +163,14 @@ class OrderDetailsView(APIView):
 
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-    @swagger_auto_schema(responses={200: OrderSerializers,
-                                    404: "it's not your order",
-                                    401: 'UNAUTHORIZED'})
+    @swagger_auto_schema(
+        responses={
+            200: OrderSerializers,
+            404: "it's not your order",
+            401: "UNAUTHORIZED",
+        }
+    )
     def get(self, request, pk):
-
         if (
             request.user.is_authenticated
             and request.user.profile.user_id == request.user.pk
@@ -183,7 +179,6 @@ class OrderDetailsView(APIView):
 
             order = Order.objects.filter(pk=pk)
             if [i.profile.pk for i in order][0] == request.user.profile.pk:
-
                 serialized = OrderSerializers(order, many=True, context=cart.cart)
 
                 return Response(serialized.data, status=status.HTTP_200_OK)
@@ -192,12 +187,16 @@ class OrderDetailsView(APIView):
 
 
 class PaymentView(APIView):
-    @swagger_auto_schema(request_body=PaymentSerializers, responses={400: "we don't have this count product",
-                                                                     404: "it's not your order",
-                                                                     401: 'UNAUTHORIZED'})
+    @swagger_auto_schema(
+        request_body=PaymentSerializers,
+        responses={
+            400: "we don't have this count product",
+            404: "it's not your order",
+            401: "UNAUTHORIZED",
+        },
+    )
     @transaction.atomic()
     def post(self, request, pk):
-
         if (
             request.user.is_authenticated
             and request.user.profile.user_id == request.user.pk
@@ -214,7 +213,6 @@ class PaymentView(APIView):
             order = Order.objects.filter(pk=pk).prefetch_related("product")
 
             if [i.profile.pk for i in order][0] == request.user.profile.pk:
-
                 payment_create = Payment.objects.create(
                     number=number,
                     name=name,
@@ -228,14 +226,17 @@ class PaymentView(APIView):
 
                 for products in order:
                     for product in products.product.all():
-
                         product.count = product.count - cart.cart.get(
                             f"{product.pk}"
                         ).get("count")
 
                         if product.count < 0:
-                            return Response({'message': f"we don't have this count product {product.title}"},
-                                            status=status.HTTP_400_BAD_REQUEST)
+                            return Response(
+                                {
+                                    "message": f"we don't have this count product {product.title}"
+                                },
+                                status=status.HTTP_400_BAD_REQUEST,
+                            )
 
                         result_update.append(product)
 

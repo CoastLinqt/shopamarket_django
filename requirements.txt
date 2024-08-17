@@ -8,11 +8,14 @@ click==8.1.7
 coreapi==2.3.3
 coreschema==0.0.4
 cryptography==43.0.0
+diploma-frontend @ file:///home/coastlineqt/PycharmProjects/python_django_diploma/diploma-frontend/dist/diploma-frontend-0.6.tar.gz#sha256=d8ffd5df7377a4555e2245e1b1ecfff83a92c3e17fdf61c84a996f63b9f1af9f
 Django==5.0.6
 django-bulk-update==2.2.0
 django-debug-toolbar==4.4.6
 django-filter==24.2
 django-oauth-toolkit==2.4.0
+django-phonenumber-field==8.0.0
+django-phonenumbers==1.0.1
 django-swagger-ui==0.1.11
 djangorestframework==3.15.2
 docutils==0.21.2
@@ -34,6 +37,7 @@ mypy-extensions==1.0.0
 oauthlib==3.2.2
 packaging==24.1
 pathspec==0.12.1
+phonenumbers==8.13.43
 pillow==10.4.0
 platformdirs==4.2.2
 pycodestyle==2.12.0
@@ -45,6 +49,7 @@ PyYAML==6.0.1
 referencing==0.35.1
 requests==2.32.3
 rpds-py==0.19.0
+ruff==0.6.1
 sentry-sdk==2.10.0
 snowballstemmer==2.2.0
 sqlparse==0.4.2

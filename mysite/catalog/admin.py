@@ -9,15 +9,22 @@ from django.urls import path
 
 @admin.register(Categories)
 class ProductAdmin(admin.ModelAdmin):
-
-    list_display = "pk", "title",
+    list_display = (
+        "pk",
+        "title",
+    )
     list_display_links = "pk", "title"
     ordering = "pk", "title"
 
 
 @admin.register(Sales)
 class SalesAdmin(admin.ModelAdmin):
-
-    list_display = "pk", "salePrice", "dateFrom", "dateTo", "product",
-    list_display_links = "pk",
-    ordering = "pk",
+    list_display = (
+        "pk",
+        "salePrice",
+        "dateFrom",
+        "dateTo",
+        "product",
+    )
+    list_display_links = ("pk",)
+    ordering = ("pk",)

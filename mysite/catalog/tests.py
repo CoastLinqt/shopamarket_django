@@ -10,7 +10,6 @@ class CategoriesViewTestCase(TestCase):
     ]
 
     def test_categories(self):
-
         response = self.client.get(reverse("catalog:categories"))
         categories = Categories.objects.filter(parent=None)
         expected_data = [
@@ -36,29 +35,31 @@ class CategoriesViewTestCase(TestCase):
 
 
 class CatalogViewTestCase(TestCase):
-
-    fixtures = ['categories_fixtures.json',
-                'shopapp/fixtures/tag_fixtures.json',
-                'shopapp/fixtures/product_fixtures.json',]
+    fixtures = [
+        "categories_fixtures.json",
+        "shopapp/fixtures/tag_fixtures.json",
+        "shopapp/fixtures/product_fixtures.json",
+    ]
 
     def test_catalog(self):
-        data = {'filter[name]': 'Iphone',
-                'filter[minPrice]': 0,
-                'filter[maxPrice]': 10000,
-                'filter[freeDelivery]': True,
-                'filter[available]': True,
-                'sort': "date",
-                'sortType': "dec",
-                'limit': 20,
-                }
+        data = {
+            "filter[name]": "Iphone",
+            "filter[minPrice]": 0,
+            "filter[maxPrice]": 10000,
+            "filter[freeDelivery]": True,
+            "filter[available]": True,
+            "sort": "date",
+            "sortType": "dec",
+            "limit": 20,
+        }
 
-        header = {"HTTP_REFERER": 'http://127.0.0.1:8000/catalog/1/'}
+        header = {"HTTP_REFERER": "http://127.0.0.1:8000/catalog/1/"}
 
         response = self.client.get(reverse("catalog:catalog"), data=data, **header)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(str(response.data['items'][0]['title']), 'Iphone')
-        self.assertEqual(len(response.data['items']), 1)
+        self.assertEqual(str(response.data["items"][0]["title"]), "Iphone")
+        self.assertEqual(len(response.data["items"]), 1)
 
 
 class CatalogPopularViewTestCase(TestCase):

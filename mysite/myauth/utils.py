@@ -1,6 +1,5 @@
 def GetProfile(object_name):
     try:
-
         dict_new = [
             {
                 "fullName": profile.fullName,
@@ -28,4 +27,3 @@ def GetProfile(object_name):
         ]
 
     return dict_new[0]
-
